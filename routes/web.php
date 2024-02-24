@@ -7,6 +7,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WebController;
+use App\Http\Controllers\CheckoutController;
 use App\Models\Review;
 use Illuminate\Support\Facades\Route;
 
@@ -21,17 +22,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [WebController::class, 'index'])->name('top');
+Route::get('/',  [WebController::class, 'index'])->name('top');
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth', 'verified'])->group(function() {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
 
     Route::post('reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
     Route::post('favorites/{product_id}', [FavoriteController::class, 'store'])->name('favorites.store');
-    Route::delete('favorites/{product_id}',[FavoriteController::class, 'destroy'])->name('favorites.destroy');
+    Route::delete('favorites/{product_id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
     Route::controller(UserController::class)->group(function () {
         Route::get('users/mypage', 'mypage')->name('mypage');
@@ -47,8 +48,13 @@ Route::middleware(['auth', 'verified'])->group(function() {
 
     Route::controller(CartController::class)->group(function () {
         Route::get('users/carts', 'index')->name('carts.index');
-        Route::post('user/carts', 'store')->name('carts.store');
+        Route::post('users/carts', 'store')->name('carts.store');
         Route::delete('users/carts', 'destroy')->name('carts.destroy');
+    });
 
+    Route::controller(CheckoutController::class)->group(function () {
+        Route::get('checkout', 'index')->name('checkout.index');
+        Route::post('checkout', 'store')->name('checkout.store');
+        Route::get('checkout/success', 'success')->name('checkout.success');
     });
 });
